@@ -1,0 +1,39 @@
+<idea-plugin>
+    <id>cn.yitulin.HttpInvokerIdeaPlugin</id>
+    <name>HttpInvokerIdeaPlugin</name>
+    <vendor email="yitulin@outlook.com" url="">31</vendor>
+
+    <description><![CDATA[
+    Http接口调用插件<br>
+    <em>偷懒是第一生产力。</em><br>
+    ]]></description>
+
+    <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationConfigurable dynamic="true" instance="cn.yitulin.ci.ui.SettingsPanel"/>
+
+        <!-- Add your extensions here -->
+
+        <applicationService serviceInterface="cn.yitulin.ci.infrastructure.service.DomainConfigService"
+                            serviceImplementation="cn.yitulin.ci.infrastructure.service.DomainConfigService"/>
+        <applicationService serviceInterface="cn.yitulin.ci.infrastructure.service.PluginConfigService"
+                            serviceImplementation="cn.yitulin.ci.infrastructure.service.PluginConfigService"/>
+        <applicationService serviceInterface="cn.yitulin.ci.infrastructure.service.InvokeService"
+                            serviceImplementation="cn.yitulin.ci.infrastructure.service.InvokeService"/>
+        <applicationService serviceInterface="cn.yitulin.ci.infrastructure.service.InvokeLogService"
+                            serviceImplementation="cn.yitulin.ci.infrastructure.service.InvokeLogService"/>
+
+    </extensions>
+
+    <actions>
+        <action id="cn.yitulin.ci.action.ControllerMethodInvokeAction"
+                class="cn.yitulin.ci.action.ControllerMethodInvokeAction" text="Controller方法测试">
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl meta o"/>
+        </action>
+    </actions>
+</idea-plugin>
