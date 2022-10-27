@@ -4,8 +4,9 @@
     <vendor email="yitulin@outlook.com" url="">31</vendor>
 
     <description><![CDATA[
-    Http接口调用插件<br>
-    <em>偷懒是第一生产力。</em><br>
+    Http Invoker IDEA Plugin<br>
+    <em>Using Http to call the specified interface in IDEA is fast and efficient.</em>
+    <em>If you are a Java backend developer, please try this plugin.</em><br>
     ]]></description>
 
     <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
@@ -30,8 +31,8 @@
     </extensions>
 
     <actions>
-        <action id="cn.yitulin.ci.action.ControllerMethodInvokeAction"
-                class="cn.yitulin.ci.action.ControllerMethodInvokeAction" text="Controller方法测试">
+        <action id="cn.yitulin.ci.action.HttpMethodInvokeAction"
+                class="cn.yitulin.ci.action.HttpMethodInvokeAction" text="Http Invoke">
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
             <keyboard-shortcut keymap="$default" first-keystroke="ctrl meta o"/>
         </action>

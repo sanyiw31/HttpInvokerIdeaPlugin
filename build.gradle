@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'cn.yitulin'
-version '1.0.4'
+version '1.0.0'
 
 repositories {
     mavenLocal()
@@ -31,18 +31,8 @@ intellij {
 }
 patchPluginXml {
     changeNotes = """
-      1.0.4<br>
-      <em>支持生成CURL命令</em><br>
-      1.0.3<br>
-      <em>修复整型参数过长无法识别的问题</em><br>
-      <em>修复PUT请求被解析为POST的问题</em><br>
-      1.0.2<br>
-      <em>修复一下有的cookie未生效的小问题</em><br>
-      1.0.1<br>
-      <em>保存配置时初始化config.json，并打开配置文件以供修改</em><br>
-      <em>文本颜色跟随主题色</em><br>
       1.0.0<br>
-      <em>init version</em><br>"""
+      <em>init version.</em><br>"""
 }
 test {
     useJUnitPlatform()

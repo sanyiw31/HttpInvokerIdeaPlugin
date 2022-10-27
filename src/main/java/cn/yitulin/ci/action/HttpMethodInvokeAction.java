@@ -6,7 +6,7 @@ import cn.yitulin.ci.infrastructure.common.enums.SpringRestMappingAnnotationEnum
 import cn.yitulin.ci.infrastructure.common.exception.ActionException;
 import cn.yitulin.ci.infrastructure.model.*;
 import cn.yitulin.ci.infrastructure.service.PluginConfigService;
-import cn.yitulin.ci.ui.ControllerInvokeFrame;
+import cn.yitulin.ci.ui.HttpInvokerFrame;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -29,7 +29,7 @@ import java.util.Objects;
  * modified : 💧💨🔥
  */
 @Slf4j
-public class ControllerMethodInvokeAction extends AnAction {
+public class HttpMethodInvokeAction extends AnAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
@@ -59,7 +59,7 @@ public class ControllerMethodInvokeAction extends AnAction {
             return;
         }
         Invoker invoker = Invoker.build(methodDesc);
-        new ControllerInvokeFrame(invoker);
+        new HttpInvokerFrame(invoker);
         log.info("finish actionPerformed");
     }
 

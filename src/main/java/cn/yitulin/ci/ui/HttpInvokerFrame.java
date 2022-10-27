@@ -34,7 +34,7 @@ import java.util.Objects;
  * @author unknown
  */
 @Slf4j
-public class ControllerInvokeFrame extends JFrame {
+public class HttpInvokerFrame extends JFrame {
 
     private long eventId;
 
@@ -42,7 +42,7 @@ public class ControllerInvokeFrame extends JFrame {
 
     private Map<String, JTextArea> paramJTextAreaMap = Maps.newHashMap();
 
-    public ControllerInvokeFrame(Invoker invoker) {
+    public HttpInvokerFrame(Invoker invoker) {
         this.invoker = invoker;
         initComponents();
         this.setTitle(this.invoker.getMethodDesc().buildApiPath());

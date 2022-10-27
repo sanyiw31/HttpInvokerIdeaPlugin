@@ -23,7 +23,7 @@ public class Constants {
             "        \"domain\": \"http://localhost:8080/\"\n" +
             "    }\n" +
             "]";
-    public static final String LOG_FILE_NAME="controller-invoker-log.json";
+    public static final String LOG_FILE_NAME="http-invoker-log.json";
     public static final Integer INVOKE_LOG_MAX_SIZE = 500;
     public static final String DATE_PATTERN="yyyy-MM-dd HH:mm:ss";
 
