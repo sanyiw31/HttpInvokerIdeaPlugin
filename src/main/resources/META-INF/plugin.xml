@@ -15,6 +15,9 @@
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.java</depends>
 
+    <!-- please see https://plugins.jetbrains.com/docs/intellij/build-number-ranges.html for description -->
+    <idea-version since-build="183.6156.11"/>
+
     <extensions defaultExtensionNs="com.intellij">
         <applicationConfigurable dynamic="true" instance="cn.yitulin.ci.ui.SettingsPanel"/>
 
