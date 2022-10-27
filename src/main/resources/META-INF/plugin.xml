@@ -1,6 +1,6 @@
 <idea-plugin>
     <id>cn.yitulin.HttpInvokerIdeaPlugin</id>
-    <name>HttpInvokerIdeaPlugin</name>
+    <name>Java Http Call Helper</name>
     <vendor email="yitulin@outlook.com" url="https://github.com/threeone-wang/HttpInvokerIdeaPlugin">31</vendor>
 
     <description><![CDATA[

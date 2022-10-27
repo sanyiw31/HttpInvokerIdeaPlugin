@@ -244,28 +244,29 @@ public class HttpInvokerFrame extends JFrame {
         // 提取参数数据
         Map<String, Object> paramMap = Maps.newHashMap();
         List<ParameterDesc> parameterDescs = invoker.getMethodDesc().getParameterDescs();
-        for (ParameterDesc parameterDesc : parameterDescs) {
-            String paramName = parameterDesc.getName();
-            JTextArea textArea = paramJTextAreaMap.get(paramName);
-            String textValue = textArea.getText();
-            if (JsonStringUtil.validateJsonFormat(textValue)
-                    && !JSONUtil.isTypeJSON(textValue)) {
-                throw new ActionException(ErrorEnum.PARAMETER_JSON_FORMAT_ERROR.getMessage(), ErrorEnum.PARAMETER_JSON_FORMAT_ERROR.getTitle());
-            }
-            if (JSONUtil.isTypeJSONObject(textValue)) {
-                paramMap.put(paramName, JSONUtil.parseObj(textValue));
-            } else if (JSONUtil.isTypeJSONArray(textValue)) {
-                paramMap.put(paramName, JSONUtil.parseArray(textValue));
-            } else if (NumberUtils.isParsable(textValue)) {
-                if (textValue.contains(".")) {
-                    paramMap.put(paramName, NumberUtils.toDouble(textValue));
+        try {
+
+            for (ParameterDesc parameterDesc : parameterDescs) {
+                String paramName = parameterDesc.getName();
+                JTextArea textArea = paramJTextAreaMap.get(paramName);
+                String textValue = textArea.getText();
+                if (JSONUtil.isTypeJSONObject(textValue)) {
+                    paramMap.put(paramName, JSONUtil.parseObj(textValue));
+                } else if (JSONUtil.isTypeJSONArray(textValue)) {
+                    paramMap.put(paramName, JSONUtil.parseArray(textValue));
+                } else if (NumberUtils.isParsable(textValue)) {
+                    if (textValue.contains(".")) {
+                        paramMap.put(paramName, NumberUtils.toDouble(textValue));
+                    } else {
+                        long aLong = NumberUtils.toLong(textValue);
+                        paramMap.put(paramName, aLong == 0 ? textValue : aLong);
+                    }
                 } else {
-                    long aLong = NumberUtils.toLong(textValue);
-                    paramMap.put(paramName, aLong == 0 ? textValue : aLong);
+                    paramMap.put(paramName, textValue);
                 }
-            } else {
-                paramMap.put(paramName, textValue);
             }
+        } catch (Exception e) {
+            throw new ActionException(e.getMessage(), ErrorEnum.PARAMETER_ANALYSIS_ERROR.getTitle());
         }
         InvokeBody invokeBody = InvokeBody.builder()
                 .domainName(domainName)
