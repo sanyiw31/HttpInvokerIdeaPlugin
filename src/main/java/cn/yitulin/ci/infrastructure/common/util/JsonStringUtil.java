@@ -1,12 +1,24 @@
 package cn.yitulin.ci.infrastructure.common.util;
 
 import cn.hutool.json.JSONUtil;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Objects;
 
 public class JsonStringUtil {
 
     private JsonStringUtil() {
+    }
+
+    public static boolean validateJsonFormat(String str) {
+        if (StringUtils.isBlank(str)) {
+            return false;
+        }
+        String trim = str.trim();
+        if (!trim.startsWith("{") || !trim.endsWith("}")) {
+            return false;
+        }
+        return true;
     }
 
     public static String toStr(Object obj) {

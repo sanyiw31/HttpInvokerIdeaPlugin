@@ -9,6 +9,8 @@ import cn.yitulin.ci.infrastructure.common.Constants;
 import cn.yitulin.ci.infrastructure.common.enums.HttpMethodEnum;
 import cn.yitulin.ci.infrastructure.common.event.EventBusCenter;
 import cn.yitulin.ci.infrastructure.common.event.InvokeResponseMessage;
+import cn.yitulin.ci.infrastructure.common.exception.ActionException;
+import cn.yitulin.ci.infrastructure.common.exception.ErrorEnum;
 import cn.yitulin.ci.infrastructure.common.util.JsonStringUtil;
 import cn.yitulin.ci.infrastructure.model.*;
 import cn.yitulin.ci.infrastructure.service.DomainConfigService;
@@ -37,6 +39,8 @@ import java.util.Objects;
 public class HttpInvokerFrame extends JFrame {
 
     private long eventId;
+
+    private boolean stopCall = false;
 
     private Invoker invoker;
 
@@ -221,14 +225,19 @@ public class HttpInvokerFrame extends JFrame {
     }
 
     private void callButtonActionPerformed(ActionEvent e) {
-        refreshInvoker();
+        try {
+            refreshInvoker();
+        } catch (ActionException actionException) {
+            actionException.showErrorDialog();
+            return;
+        }
         responseTextArea.setText("");
         invoker.setGenerateCurlText(false);
         InvokeService.getInstance().invoke(invoker);
         requestTimeLabel.setText("请求时间：" + LocalDateTime.now().format(DateTimeFormatter.ofPattern(Constants.DATE_PATTERN)));
     }
 
-    private void refreshInvoker() {
+    private void refreshInvoker() throws ActionException {
         String domainName = domainComboBox.getSelectedItem().toString();
         String url = urlTextField.getText();
         String httpMethod = methodComboBox.getSelectedItem().toString();
@@ -239,6 +248,10 @@ public class HttpInvokerFrame extends JFrame {
             String paramName = parameterDesc.getName();
             JTextArea textArea = paramJTextAreaMap.get(paramName);
             String textValue = textArea.getText();
+            if (JsonStringUtil.validateJsonFormat(textValue)
+                    && !JSONUtil.isTypeJSON(textValue)) {
+                throw new ActionException(ErrorEnum.PARAMETER_JSON_FORMAT_ERROR.getMessage(), ErrorEnum.PARAMETER_JSON_FORMAT_ERROR.getTitle());
+            }
             if (JSONUtil.isTypeJSONObject(textValue)) {
                 paramMap.put(paramName, JSONUtil.parseObj(textValue));
             } else if (JSONUtil.isTypeJSONArray(textValue)) {
@@ -270,7 +283,12 @@ public class HttpInvokerFrame extends JFrame {
     }
 
     private void generateCurl(ActionEvent e) {
-        refreshInvoker();
+        try {
+            refreshInvoker();
+        } catch (ActionException actionException) {
+            actionException.showErrorDialog();
+            return;
+        }
         responseTextArea.setText("");
         invoker.setGenerateCurlText(true);
         InvokeService.getInstance().invoke(invoker);
@@ -314,123 +332,128 @@ public class HttpInvokerFrame extends JFrame {
 //            . EmptyBorder( 0, 0, 0, 0) , "JFor\u006dDesi\u0067ner \u0045valu\u0061tion", javax. swing. border. TitledBorder. CENTER, javax
 //            . swing. border. TitledBorder. BOTTOM, new java .awt .Font ("Dia\u006cog" ,java .awt .Font .BOLD ,
 //            12 ), java. awt. Color. red) ,dialogPane. getBorder( )) );
-            dialogPane. addPropertyChangeListener (new java. beans
-            . PropertyChangeListener( ){ @Override public void propertyChange (java .beans .PropertyChangeEvent e) {if ("bord\u0065r" .equals (e .
-            getPropertyName () )) throw new RuntimeException( ); }} );
+            dialogPane.addPropertyChangeListener(new java.beans
+                    .PropertyChangeListener() {
+                @Override
+                public void propertyChange(java.beans.PropertyChangeEvent e) {
+                    if ("bord\u0065r".equals(e.
+                            getPropertyName())) throw new RuntimeException();
+                }
+            });
             dialogPane.setLayout(new BorderLayout());
 
             //======== contentPanel ========
             {
                 contentPanel.setLayout(new GridBagLayout());
-                ((GridBagLayout)contentPanel.getLayout()).columnWidths = new int[] {0, 0, 0};
-                ((GridBagLayout)contentPanel.getLayout()).rowHeights = new int[] {0, 0};
-                ((GridBagLayout)contentPanel.getLayout()).columnWeights = new double[] {0.0, 0.0, 1.0E-4};
-                ((GridBagLayout)contentPanel.getLayout()).rowWeights = new double[] {0.0, 1.0E-4};
+                ((GridBagLayout) contentPanel.getLayout()).columnWidths = new int[]{0, 0, 0};
+                ((GridBagLayout) contentPanel.getLayout()).rowHeights = new int[]{0, 0};
+                ((GridBagLayout) contentPanel.getLayout()).columnWeights = new double[]{0.0, 0.0, 1.0E-4};
+                ((GridBagLayout) contentPanel.getLayout()).rowWeights = new double[]{0.0, 1.0E-4};
 
                 //======== panel1 ========
                 {
                     panel1.setLayout(new GridBagLayout());
-                    ((GridBagLayout)panel1.getLayout()).columnWidths = new int[] {0, 0, 0};
-                    ((GridBagLayout)panel1.getLayout()).rowHeights = new int[] {0, 0, 0, 56, 0};
-                    ((GridBagLayout)panel1.getLayout()).columnWeights = new double[] {0.0, 0.0, 1.0E-4};
-                    ((GridBagLayout)panel1.getLayout()).rowWeights = new double[] {0.0, 0.0, 0.0, 0.0, 1.0E-4};
+                    ((GridBagLayout) panel1.getLayout()).columnWidths = new int[]{0, 0, 0};
+                    ((GridBagLayout) panel1.getLayout()).rowHeights = new int[]{0, 0, 0, 56, 0};
+                    ((GridBagLayout) panel1.getLayout()).columnWeights = new double[]{0.0, 0.0, 1.0E-4};
+                    ((GridBagLayout) panel1.getLayout()).rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 1.0E-4};
 
                     //---- label1 ----
                     label1.setText("Domain\uff1a");
                     panel1.add(label1, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
-                        GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                        new Insets(0, 0, 5, 5), 0, 0));
+                            GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                            new Insets(0, 0, 5, 5), 0, 0));
 
                     //---- domainComboBox ----
                     domainComboBox.addItemListener(e -> domainComboBoxItemStateChanged(e));
                     panel1.add(domainComboBox, new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0,
-                        GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                        new Insets(0, 0, 5, 0), 0, 0));
+                            GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                            new Insets(0, 0, 5, 0), 0, 0));
 
                     //---- label3 ----
                     label3.setText("Url\uff1a");
                     panel1.add(label3, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0,
-                        GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                        new Insets(0, 0, 5, 5), 0, 0));
+                            GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                            new Insets(0, 0, 5, 5), 0, 0));
 
                     //---- urlTextField ----
                     urlTextField.setEditable(false);
                     urlTextField.setBackground(UIManager.getColor("TextField.background"));
                     urlTextField.setForeground(UIManager.getColor("TextField.foreground"));
                     panel1.add(urlTextField, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0,
-                        GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                        new Insets(0, 0, 5, 0), 0, 0));
+                            GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                            new Insets(0, 0, 5, 0), 0, 0));
 
                     //---- label2 ----
                     label2.setText("Method\uff1a");
                     panel1.add(label2, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0,
-                        GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                        new Insets(0, 0, 5, 5), 0, 0));
+                            GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                            new Insets(0, 0, 5, 5), 0, 0));
                     panel1.add(methodComboBox, new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0,
-                        GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                        new Insets(0, 0, 5, 0), 0, 0));
+                            GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                            new Insets(0, 0, 5, 0), 0, 0));
 
                     //======== paramsPanel ========
                     {
                         paramsPanel.setLayout(new GridBagLayout());
-                        ((GridBagLayout)paramsPanel.getLayout()).columnWidths = new int[] {0, 0};
-                        ((GridBagLayout)paramsPanel.getLayout()).rowHeights = new int[] {0, 0, 0};
-                        ((GridBagLayout)paramsPanel.getLayout()).columnWeights = new double[] {0.0, 1.0E-4};
-                        ((GridBagLayout)paramsPanel.getLayout()).rowWeights = new double[] {0.0, 0.0, 1.0E-4};
+                        ((GridBagLayout) paramsPanel.getLayout()).columnWidths = new int[]{0, 0};
+                        ((GridBagLayout) paramsPanel.getLayout()).rowHeights = new int[]{0, 0, 0};
+                        ((GridBagLayout) paramsPanel.getLayout()).columnWeights = new double[]{0.0, 1.0E-4};
+                        ((GridBagLayout) paramsPanel.getLayout()).rowWeights = new double[]{0.0, 0.0, 1.0E-4};
                     }
                     panel1.add(paramsPanel, new GridBagConstraints(0, 3, 2, 1, 0.6, 1.0,
-                        GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                        new Insets(0, 0, 0, 0), 0, 0));
+                            GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                            new Insets(0, 0, 0, 0), 0, 0));
                 }
                 contentPanel.add(panel1, new GridBagConstraints(0, 0, 1, 1, 0.5, 1.0,
-                    GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                    new Insets(0, 0, 0, 5), 0, 0));
+                        GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                        new Insets(0, 0, 0, 5), 0, 0));
 
                 //======== panel2 ========
                 {
                     panel2.setLayout(new GridBagLayout());
-                    ((GridBagLayout)panel2.getLayout()).columnWidths = new int[] {0, 0};
-                    ((GridBagLayout)panel2.getLayout()).rowHeights = new int[] {0, 0, 0};
-                    ((GridBagLayout)panel2.getLayout()).columnWeights = new double[] {0.0, 1.0E-4};
-                    ((GridBagLayout)panel2.getLayout()).rowWeights = new double[] {0.0, 0.0, 1.0E-4};
+                    ((GridBagLayout) panel2.getLayout()).columnWidths = new int[]{0, 0};
+                    ((GridBagLayout) panel2.getLayout()).rowHeights = new int[]{0, 0, 0};
+                    ((GridBagLayout) panel2.getLayout()).columnWeights = new double[]{0.0, 1.0E-4};
+                    ((GridBagLayout) panel2.getLayout()).rowWeights = new double[]{0.0, 0.0, 1.0E-4};
 
                     //======== panel3 ========
                     {
                         panel3.setLayout(new GridBagLayout());
-                        ((GridBagLayout)panel3.getLayout()).columnWidths = new int[] {127, 0, 0};
-                        ((GridBagLayout)panel3.getLayout()).rowHeights = new int[] {0, 0, 0, 0};
-                        ((GridBagLayout)panel3.getLayout()).columnWeights = new double[] {1.0, 0.0, 1.0E-4};
-                        ((GridBagLayout)panel3.getLayout()).rowWeights = new double[] {0.0, 0.0, 0.0, 1.0E-4};
+                        ((GridBagLayout) panel3.getLayout()).columnWidths = new int[]{127, 0, 0};
+                        ((GridBagLayout) panel3.getLayout()).rowHeights = new int[]{0, 0, 0, 0};
+                        ((GridBagLayout) panel3.getLayout()).columnWeights = new double[]{1.0, 0.0, 1.0E-4};
+                        ((GridBagLayout) panel3.getLayout()).rowWeights = new double[]{0.0, 0.0, 0.0, 1.0E-4};
 
                         //---- requestTimeLabel ----
                         requestTimeLabel.setText("\u8bf7\u6c42\u65f6\u95f4\uff1a");
                         panel3.add(requestTimeLabel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
-                            GridBagConstraints.WEST, GridBagConstraints.VERTICAL,
-                            new Insets(0, 0, 0, 0), 0, 0));
+                                GridBagConstraints.WEST, GridBagConstraints.VERTICAL,
+                                new Insets(0, 0, 0, 0), 0, 0));
 
                         //---- responseTimeLabel ----
                         responseTimeLabel.setText("\u54cd\u5e94\u65f6\u95f4\uff1a");
                         panel3.add(responseTimeLabel, new GridBagConstraints(0, 1, 1, 1, 0.5, 0.0,
-                            GridBagConstraints.WEST, GridBagConstraints.VERTICAL,
-                            new Insets(0, 0, 0, 0), 0, 0));
+                                GridBagConstraints.WEST, GridBagConstraints.VERTICAL,
+                                new Insets(0, 0, 0, 0), 0, 0));
 
                         //---- label5 ----
                         label5.setText("\u8bf7\u6c42\u7ed3\u679c\uff1a");
                         label5.setHorizontalAlignment(SwingConstants.LEFT);
                         panel3.add(label5, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0,
-                            GridBagConstraints.WEST, GridBagConstraints.VERTICAL,
-                            new Insets(0, 0, 0, 0), 0, 0));
+                                GridBagConstraints.WEST, GridBagConstraints.VERTICAL,
+                                new Insets(0, 0, 0, 0), 0, 0));
 
                         //---- clearResponseButton ----
                         clearResponseButton.setText("\u6e05\u9664\u7ed3\u679c");
                         clearResponseButton.addActionListener(e -> clearResponse(e));
                         panel3.add(clearResponseButton, new GridBagConstraints(1, 2, 1, 1, 0.5, 0.0,
-                            GridBagConstraints.EAST, GridBagConstraints.VERTICAL,
-                            new Insets(0, 0, 0, 0), 0, 0));
+                                GridBagConstraints.EAST, GridBagConstraints.VERTICAL,
+                                new Insets(0, 0, 0, 0), 0, 0));
                     }
                     panel2.add(panel3, new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0,
-                        GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                        new Insets(0, 0, 5, 0), 0, 0));
+                            GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                            new Insets(0, 0, 5, 0), 0, 0));
 
                     //======== scrollPane1 ========
                     {
@@ -444,12 +467,12 @@ public class HttpInvokerFrame extends JFrame {
                         scrollPane1.setViewportView(responseTextArea);
                     }
                     panel2.add(scrollPane1, new GridBagConstraints(0, 1, 1, 1, 1.0, 1.0,
-                        GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                        new Insets(0, 0, 0, 0), 0, 0));
+                            GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                            new Insets(0, 0, 0, 0), 0, 0));
                 }
                 contentPanel.add(panel2, new GridBagConstraints(1, 0, 1, 1, 0.5, 1.0,
-                    GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                    new Insets(0, 0, 0, 0), 0, 0));
+                        GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                        new Insets(0, 0, 0, 0), 0, 0));
             }
             dialogPane.add(contentPanel, BorderLayout.CENTER);
 
@@ -457,22 +480,22 @@ public class HttpInvokerFrame extends JFrame {
             {
                 buttonBar.setBorder(new EmptyBorder(12, 0, 0, 0));
                 buttonBar.setLayout(new GridBagLayout());
-                ((GridBagLayout)buttonBar.getLayout()).columnWidths = new int[] {0, 0, 80};
-                ((GridBagLayout)buttonBar.getLayout()).columnWeights = new double[] {1.0, 0.0, 0.0};
+                ((GridBagLayout) buttonBar.getLayout()).columnWidths = new int[]{0, 0, 80};
+                ((GridBagLayout) buttonBar.getLayout()).columnWeights = new double[]{1.0, 0.0, 0.0};
 
                 //---- generateCurl ----
                 generateCurl.setText("\u751f\u6210CURL");
                 generateCurl.addActionListener(e -> generateCurl(e));
                 buttonBar.add(generateCurl, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
-                    GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                    new Insets(0, 0, 0, 5), 0, 0));
+                        GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                        new Insets(0, 0, 0, 5), 0, 0));
 
                 //---- okButton ----
                 okButton.setText("Call");
                 okButton.addActionListener(e -> callButtonActionPerformed(e));
                 buttonBar.add(okButton, new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0,
-                    GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                    new Insets(0, 0, 0, 0), 0, 0));
+                        GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                        new Insets(0, 0, 0, 0), 0, 0));
             }
             dialogPane.add(buttonBar, BorderLayout.SOUTH);
         }

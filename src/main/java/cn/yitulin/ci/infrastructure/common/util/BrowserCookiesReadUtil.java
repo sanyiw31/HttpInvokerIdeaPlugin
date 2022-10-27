@@ -4,6 +4,7 @@ import cn.yitulin.ci.infrastructure.common.enums.BrowserEnum;
 import cn.yitulin.ci.infrastructure.model.Cookie;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
+import com.intellij.openapi.ui.Messages;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.crypto.Cipher;
@@ -73,6 +74,7 @@ public class BrowserCookiesReadUtil {
                         .build());
             }
         } catch (Exception e) {
+            Messages.showErrorDialog(e.getMessage(), "浏览器Cookie读取出错");
             e.printStackTrace();
             if (Objects.nonNull(statement)) {
                 try {

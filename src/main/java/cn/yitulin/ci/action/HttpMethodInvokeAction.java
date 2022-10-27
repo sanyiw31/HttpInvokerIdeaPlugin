@@ -1,9 +1,11 @@
 package cn.yitulin.ci.action;
 
 import cn.yitulin.ci.infrastructure.common.Constants;
-import cn.yitulin.ci.infrastructure.common.util.PsiTypeUtil;
 import cn.yitulin.ci.infrastructure.common.enums.SpringRestMappingAnnotationEnum;
 import cn.yitulin.ci.infrastructure.common.exception.ActionException;
+import cn.yitulin.ci.infrastructure.common.exception.ErrorEnum;
+import cn.yitulin.ci.infrastructure.common.util.OperateSystemUtil;
+import cn.yitulin.ci.infrastructure.common.util.PsiTypeUtil;
 import cn.yitulin.ci.infrastructure.model.*;
 import cn.yitulin.ci.infrastructure.service.PluginConfigService;
 import cn.yitulin.ci.ui.HttpInvokerFrame;
@@ -34,10 +36,14 @@ public class HttpMethodInvokeAction extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
         log.info("start actionPerformed");
+        if (!OperateSystemUtil.isMac()) {
+            ErrorEnum.UN_SUPPORT_OPERATE_SYSTEM_ERROR.showErrorDialog();
+            return;
+        }
         try {
             checkPluginSetting();
         } catch (ActionException actionException) {
-            Messages.showErrorDialog(actionException.getMessage(), actionException.getTitle());
+            actionException.showErrorDialog();
             return;
         }
         PsiElement psiElement = e.getData(CommonDataKeys.PSI_ELEMENT);
@@ -51,7 +57,7 @@ public class HttpMethodInvokeAction extends AnAction {
         try {
             methodDesc = createMethodDesc(psiFile, psiMethod);
         } catch (ActionException actionException) {
-            Messages.showErrorDialog(actionException.getMessage(), actionException.getTitle());
+            actionException.showErrorDialog();
             return;
         }
         if (Objects.isNull(methodDesc)) {
