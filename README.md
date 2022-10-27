@@ -1,52 +1,52 @@
 # Http Invoker IDEA Plugin
 
-目前仅支持MAC OSX。
+Currently only supports MAC OSX.
 
-在IDEA中使用Http调用指定接口，快捷高效。
+Using Http to call the specified interface in IDEA is fast and efficient.
 
-如果你是一名Java后端开发，敬请尝试本插件。
+If you are a Java backend developer, please try this plugin.
 
-## 核心特性
+## Core Features
 
-1. 根据配置信息、代码注解，拼装Http Url、Methond信息。
-2. 参数自动解析拼装Json数据结构。
-3. 支持提取谷歌浏览器下的Cookie信息，用于接口登录鉴权。
+1. Assemble Http Url and Method information according to configuration information and code comments.
+2. The parameters are automatically parsed to assemble the Json data structure.
+3. Support to extract cookie information under Google Chrome for interface login authentication.
 
-## 运行要求
+## Operating requirements
 
-IDEA版本需大于等于2018.3.6
+IDEA version must be greater than or equal to 2018.3.6
 
-## 安装
+## Install
 
-方法一：自助构建
+Option One: Self-service build
 
-先clone工程到本地
+First clone the project to the local
 
 ```shell
 git clone https://github.com/threeone-wang/HttpInvokerIdeaPlugin.git
 ```
 
-IDEA打开工程，待导入完毕后。
+IDEA opens the project and waits for the import to complete.
 
-执行Task：Gradle ——》 intellij ——》 buildPlugin
+Execute Task: Gradle --> intellij --> buildPlugin
 
-生成的插件包在 build/distributions 目录下。
+The generated plugin package is in the build/distributions directory.
 
 
 
-方法二：Github中下载插件压缩包
+Option Two：Download the plugin zip package from Github
 
 https://github.com/threeone-wang/HttpInvokerIdeaPlugin/releases/tag/1.0.0
 
 
 
-IDEA从本地安装插件方式见：
+See how IDEA installs plug-ins locally:
 
 https://www.jetbrains.com/help/idea/managing-plugins.html#install_plugin_from_disk
 
-## 使用
+## use
 
-### 插件配置
+### Plugin configuration
 
 ![image](https://user-images.githubusercontent.com/41659443/198217931-96614c8d-fe41-4872-813a-b15492ed258a.png)
 
@@ -54,7 +54,7 @@ https://www.jetbrains.com/help/idea/managing-plugins.html#install_plugin_from_di
 
 ![image-20221027142950385](https://user-images.githubusercontent.com/41659443/198215169-23a23240-2b56-4a80-9183-b94df1c65e01.png)
 
-### 接口调用
+### interface call
 
 ![image-20221027142950386](https://user-images.githubusercontent.com/41659443/198215766-1f2492bb-42c4-4ed7-90d0-08af9592d51c.png)
 

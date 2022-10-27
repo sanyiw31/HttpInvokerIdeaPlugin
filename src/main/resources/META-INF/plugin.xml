@@ -1,12 +1,13 @@
 <idea-plugin>
     <id>cn.yitulin.HttpInvokerIdeaPlugin</id>
     <name>HttpInvokerIdeaPlugin</name>
-    <vendor email="yitulin@outlook.com" url="">31</vendor>
+    <vendor email="yitulin@outlook.com" url="https://github.com/threeone-wang/HttpInvokerIdeaPlugin">31</vendor>
 
     <description><![CDATA[
     Http Invoker IDEA Plugin<br>
     <em>Using Http to call the specified interface in IDEA is fast and efficient.</em>
     <em>If you are a Java backend developer, please try this plugin.</em><br>
+    GitHub: <a href="https://github.com/threeone-wang/HttpInvokerIdeaPlugin">https://github.com/threeone-wang/HttpInvokerIdeaPlugin</a>
     ]]></description>
 
     <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
