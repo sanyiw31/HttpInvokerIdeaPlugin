@@ -1,6 +1,6 @@
 # Http Invoker IDEA Plugin
 
-目前仅支持MAC OSX。
+目前仅支持MAC OSX，Spring MVC框架，Chromium内核浏览器。
 
 在IDEA中使用Http调用指定接口，快捷高效。
 

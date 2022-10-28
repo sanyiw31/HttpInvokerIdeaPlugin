@@ -1,6 +1,6 @@
 # Http Invoker IDEA Plugin
 
-Currently only supports MAC OSX.
+Currently only supports MAC OSX, Spring MVC framework, Chromium kernel browser.
 
 Using Http to call the specified interface in IDEA is fast and efficient.
 
