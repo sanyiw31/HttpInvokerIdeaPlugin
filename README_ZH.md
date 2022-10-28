@@ -18,7 +18,13 @@ IDEA版本需大于等于2018.3.6
 
 ## 安装
 
-方法一：自助构建
+**方法一**：插件市场搜索Java Http Call Helper进行安装
+
+![image](https://user-images.githubusercontent.com/41659443/198494263-652d1915-6791-444b-9aa1-5e674a75b028.png)
+
+
+
+**方法二**：自助构建
 
 先clone工程到本地
 
@@ -34,7 +40,7 @@ IDEA打开工程，待导入完毕后。
 
 
 
-方法二：Github中下载插件压缩包
+**方法三**：Github中下载插件压缩包
 
 https://github.com/threeone-wang/HttpInvokerIdeaPlugin/releases/tag/1.0.0
 

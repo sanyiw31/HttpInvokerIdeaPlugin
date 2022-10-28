@@ -18,7 +18,13 @@ IDEA version must be greater than or equal to 2018.3.6
 
 ## Install
 
-Option One: Self-service build
+**Option One**: Search for Java Http Call Helper in the plugin market to install
+
+![image](https://user-images.githubusercontent.com/41659443/198494263-652d1915-6791-444b-9aa1-5e674a75b028.png)
+
+
+
+**Option Two**: Self-service build
 
 First clone the project to the local
 
@@ -34,7 +40,7 @@ The generated plugin package is in the build/distributions directory.
 
 
 
-Option Two：Download the plugin zip package from Github
+**Option Three**：Download the plugin zip package from Github
 
 https://github.com/threeone-wang/HttpInvokerIdeaPlugin/releases/tag/1.0.0
 
