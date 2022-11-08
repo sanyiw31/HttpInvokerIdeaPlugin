@@ -201,7 +201,12 @@ public class InvokeService {
         List<Cookie> cookies = BrowserCookiesReadUtil.read(browserEnum, domains, cookieNames);
         Map<String, String> cookieNameMap = domainConfig.getCookies().stream().collect(Collectors.toMap(CookieConfig::getSourceName, CookieConfig::getTargetName));
 
-        Map<String, String> map = cookies.stream().collect(Collectors.toMap(cookie -> cookie.getDomain() + "_" + cookie.getName(), Cookie::getValue));
+        Map<String, String> map = cookies.stream().collect(Collectors.toMap(cookie -> cookie.getDomain() + "_" + cookie.getName(), cookie -> {
+            if (Objects.nonNull(cookie.getValue())) {
+                return cookie.getValue();
+            }
+            return "";
+        }));
         Map<String, String> cookieMap = Maps.newHashMap();
         domainConfig.getCookies().stream().forEach(cookieConfig -> {
             String cookieValue = map.get(cookieConfig.getDomain() + "_" + cookieConfig.getSourceName());

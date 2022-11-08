@@ -22,6 +22,11 @@ public class PluginConfig {
      */
     private String browserType;
 
+    /**
+     * 饼干数据库路径
+     */
+    private String cookieDbPath;
+
     public String concatDefaultConfigFilePath() {
         return this.configFileDirectory + "/" + Constants.CONFIG_FILE_NAME;
     }
