@@ -30,7 +30,7 @@ new FormModel {
 						name: "panel1"
 						add( new FormComponent( "javax.swing.JLabel" ) {
 							name: "label1"
-							"text": "Domain："
+							"text": "服务环境："
 						}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) )
 						add( new FormComponent( "javax.swing.JComboBox" ) {
 							name: "domainComboBox"

@@ -12,6 +12,13 @@ If you are a Java backend developer, please try this plugin.
 2. The parameters are automatically parsed to assemble the Json data structure.
 3. Support to extract cookie information under Google Chrome for interface login authentication.
 
+## Changelog
+
+### November 11, 2022
+
+- The new name attribute is added to the domain configuration: you can replace the domain by setting a more recognizable name. In the calling window, the original domian selection box is changed to the name selection box. When the name is not configured, the domian is used.
+- Add the specified cookie database file path configuration: some user cookie database files are not in the default path of Chrome, you can find the file and configure the specified path by yourself
+
 ## Operating requirements
 
 IDEA version must be greater than or equal to 2018.3.6
