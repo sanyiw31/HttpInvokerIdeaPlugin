@@ -86,7 +86,7 @@ public class SettingsPanel extends JPanel implements Configurable {
     @Override
     public void apply() {
         PluginConfig pluginConfig = getNewGlobalConfig();
-        if (!pluginConfig.getCookieDbPath().endsWith("Cookies")) {
+        if (StringUtils.isNotBlank(pluginConfig.getCookieDbPath()) && !pluginConfig.getCookieDbPath().endsWith("Cookies")) {
             ErrorEnum.CONFIG_COOKIE_DB_PATH_ILLEGAL.showErrorDialog();
             return;
         }
