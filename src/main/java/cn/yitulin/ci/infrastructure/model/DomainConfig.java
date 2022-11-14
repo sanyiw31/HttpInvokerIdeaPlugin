@@ -10,6 +10,8 @@ import java.util.Map;
 @Builder
 public class DomainConfig {
 
+    private String name;
+
     private String domain;
 
     private Map<String, String> headers;

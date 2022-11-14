@@ -52,9 +52,9 @@ public class HttpInvokerFrame extends JFrame {
         this.setTitle(this.invoker.getMethodDesc().buildApiPath());
         whenPressEsc();
         whenWindowClose();
-        initDomainComboBoxItem();
         initHttpMethodComboBoxItem(this.invoker.getMethodDesc().getAnnotationDesc().getHttpMethod());
-        urlTextField.setText(this.invoker.getMethodDesc().buildUrl(domainComboBox.getSelectedItem().toString()));
+        initDomainComboBoxItem();
+        refreshUrlTextField();
         refreshParamsLayout(this.invoker.getMethodDesc());
         refreshParamsFromLog();
         EventBusCenter.register(this);
@@ -219,9 +219,14 @@ public class HttpInvokerFrame extends JFrame {
 
     private void domainComboBoxItemStateChanged(ItemEvent e) {
         if (e.getStateChange() == ItemEvent.SELECTED) {
-            urlTextField.setText(invoker.getMethodDesc().buildUrl(domainComboBox.getSelectedItem().toString()));
+            refreshUrlTextField();
             refreshParamsFromLog();
         }
+    }
+
+    private void refreshUrlTextField() {
+        DomainConfig domainConfig = DomainConfigService.getInstance().readByDomain(true, domainComboBox.getSelectedItem().toString());
+        urlTextField.setText(invoker.getMethodDesc().buildUrl(domainConfig.getDomain()));
     }
 
     private void callButtonActionPerformed(ActionEvent e) {
@@ -329,18 +334,20 @@ public class HttpInvokerFrame extends JFrame {
         //======== dialogPane ========
         {
             dialogPane.setBorder(new EmptyBorder(12, 12, 12, 12));
-//            dialogPane.setBorder (new javax. swing. border. CompoundBorder( new javax .swing .border .TitledBorder (new javax. swing. border
-//            . EmptyBorder( 0, 0, 0, 0) , "JFor\u006dDesi\u0067ner \u0045valu\u0061tion", javax. swing. border. TitledBorder. CENTER, javax
-//            . swing. border. TitledBorder. BOTTOM, new java .awt .Font ("Dia\u006cog" ,java .awt .Font .BOLD ,
-//            12 ), java. awt. Color. red) ,dialogPane. getBorder( )) );
-            dialogPane.addPropertyChangeListener(new java.beans
-                    .PropertyChangeListener() {
-                @Override
-                public void propertyChange(java.beans.PropertyChangeEvent e) {
-                    if ("bord\u0065r".equals(e.
-                            getPropertyName())) throw new RuntimeException();
-                }
-            });
+//            dialogPane.setBorder (new javax. swing. border. CompoundBorder( new javax .swing .border .TitledBorder (
+//            new javax. swing. border. EmptyBorder( 0, 0, 0, 0) , "JFor\u006dDesi\u0067ner \u0045valu\u0061tion"
+//            , javax. swing. border. TitledBorder. CENTER, javax. swing. border. TitledBorder. BOTTOM
+//            , new java .awt .Font ("Dia\u006cog" ,java .awt .Font .BOLD ,12 )
+//            , java. awt. Color. red) ,dialogPane. getBorder( )) );
+            dialogPane.addPropertyChangeListener(
+                    new java.beans.PropertyChangeListener() {
+                        @Override
+                        public void propertyChange(java.beans.PropertyChangeEvent e
+                        ) {
+                            if ("bord\u0065r".equals(e.getPropertyName())) throw new RuntimeException()
+                                    ;
+                        }
+                    });
             dialogPane.setLayout(new BorderLayout());
 
             //======== contentPanel ========
@@ -360,7 +367,7 @@ public class HttpInvokerFrame extends JFrame {
                     ((GridBagLayout) panel1.getLayout()).rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 1.0E-4};
 
                     //---- label1 ----
-                    label1.setText("Domain\uff1a");
+                    label1.setText("\u670d\u52a1\u73af\u5883\uff1a");
                     panel1.add(label1, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
                             GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                             new Insets(0, 0, 5, 5), 0, 0));

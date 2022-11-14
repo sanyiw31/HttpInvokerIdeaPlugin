@@ -28,17 +28,17 @@ public class DomainConfigService {
         return ServiceManager.getService(DomainConfigService.class);
     }
 
-    private Cache<String, DomainConfig> cache = CacheBuilder.newBuilder().expireAfterWrite(15, TimeUnit.SECONDS).build();
+    private Cache<String, DomainConfig> cache = CacheBuilder.newBuilder().expireAfterWrite(30, TimeUnit.SECONDS).build();
 
-    public DomainConfig readByDomain(boolean useCache, String domainName) {
-        log.info("start readByDomain,useCache:[{}],domainName:[{}]", useCache, domainName);
+    public DomainConfig readByDomain(boolean useCache, String domain) {
+        log.info("start readByDomain,useCache:[{}],domain:[{}]", useCache, domain);
         if (useCache) {
-            DomainConfig domainConfig = readFromCache(domainName, true);
+            DomainConfig domainConfig = readFromCache(domain, true);
             log.info("finish readByDomain, cache:[{}]", domainConfig);
             return domainConfig;
         }
         readFromDiskAndRefreshCache();
-        DomainConfig ifPresent = cache.getIfPresent(domainName);
+        DomainConfig ifPresent = cache.getIfPresent(domain);
         log.info("finish readByDomain, response:[{}]", ifPresent);
         return ifPresent;
     }
@@ -78,7 +78,7 @@ public class DomainConfigService {
             List<DomainConfig> domainConfigs = JSONUtil.toList(fileToString, DomainConfig.class);
             log.info("域名配置：[{}]", domainConfigs);
             if (CollectionUtils.isNotEmpty(domainConfigs)) {
-                domainConfigs.stream().forEach(item -> cache.put(item.getDomain(), item));
+                domainConfigs.stream().forEach(item -> cache.put(StringUtils.isNotEmpty(item.getName()) ? item.getName() : item.getDomain(), item));
             }
         } catch (IOException e) {
             log.error("读取json文件失败,filePath:[{}],错误信息:[{}]", pluginConfig.getConfigFileDirectory(), e.getMessage(), e);

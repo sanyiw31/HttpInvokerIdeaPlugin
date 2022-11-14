@@ -6,6 +6,7 @@ package cn.yitulin.ci.ui;
 
 import cn.yitulin.ci.infrastructure.common.Constants;
 import cn.yitulin.ci.infrastructure.common.enums.BrowserEnum;
+import cn.yitulin.ci.infrastructure.common.exception.ErrorEnum;
 import cn.yitulin.ci.infrastructure.model.PluginConfig;
 import cn.yitulin.ci.infrastructure.service.PluginConfigService;
 import com.intellij.ide.DataManager;
@@ -50,6 +51,9 @@ public class SettingsPanel extends JPanel implements Configurable {
         } else {
             saveDirPath.setText(Constants.CONFIG_FILE_DIRECTORY_PLACEHOLDER);
         }
+        if (StringUtils.isNotBlank(pluginConfig.getCookieDbPath())) {
+            customCookieDbPathTextField.setText(pluginConfig.getCookieDbPath());
+        }
         if (StringUtils.isNotBlank(pluginConfig.getBrowserType())) {
             if (BrowserEnum.MICROSOFT_EDGE.getName().equals(pluginConfig.getBrowserType())) {
                 edgeRadioButton.setSelected(true);
@@ -82,6 +86,10 @@ public class SettingsPanel extends JPanel implements Configurable {
     @Override
     public void apply() {
         PluginConfig pluginConfig = getNewGlobalConfig();
+        if (StringUtils.isNotBlank(pluginConfig.getCookieDbPath()) && !pluginConfig.getCookieDbPath().endsWith("Cookies")) {
+            ErrorEnum.CONFIG_COOKIE_DB_PATH_ILLEGAL.showErrorDialog();
+            return;
+        }
         pluginConfigService.save(pluginConfig);
         Project project = DataManager.getInstance().getDataContext(this).getData(CommonDataKeys.PROJECT);
         VirtualFile fileByPath = LocalFileSystem.getInstance().findFileByPath(pluginConfig.concatDefaultConfigFilePath());
@@ -93,6 +101,7 @@ public class SettingsPanel extends JPanel implements Configurable {
         PluginConfig pluginConfig = new PluginConfig();
         pluginConfig.setConfigFileDirectory(Constants.CONFIG_FILE_DIRECTORY_PLACEHOLDER.equals(saveDirPath.getText()) ? "" : saveDirPath.getText());
         pluginConfig.setBrowserType(chromeRadioButton.isSelected() ? BrowserEnum.GOOGLE_CHROME.getName() : BrowserEnum.MICROSOFT_EDGE.getName());
+        pluginConfig.setCookieDbPath(customCookieDbPathTextField.getText());
         return pluginConfig;
     }
 
@@ -118,6 +127,8 @@ public class SettingsPanel extends JPanel implements Configurable {
         panel2 = new JPanel();
         chromeRadioButton = new JRadioButton();
         edgeRadioButton = new JRadioButton();
+        label2 = new JLabel();
+        customCookieDbPathTextField = new JTextField();
         label4 = new JLabel();
         panel1 = new JPanel();
         saveDirPath = new JLabel();
@@ -127,28 +138,27 @@ public class SettingsPanel extends JPanel implements Configurable {
         //======== this ========
         setMinimumSize(new Dimension(800, 500));
         setPreferredSize(new Dimension(640, 400));
-//        setBorder ( new javax . swing. border .CompoundBorder ( new javax . swing. border .TitledBorder ( new javax
-//        . swing. border .EmptyBorder ( 0, 0 ,0 , 0) ,  "JF\u006frmDesi\u0067ner Ev\u0061luatio\u006e" , javax. swing
-//        .border . TitledBorder. CENTER ,javax . swing. border .TitledBorder . BOTTOM, new java. awt .
-//        Font ( "Dialo\u0067", java .awt . Font. BOLD ,12 ) ,java . awt. Color .red
-//        ) , getBorder () ) );
+//        setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.TitledBorder(new javax.swing.border.EmptyBorder(
+//                0, 0, 0, 0), "JF\u006frm\u0044es\u0069gn\u0065r \u0045va\u006cua\u0074io\u006e", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder
+//                .BOTTOM, new java.awt.Font("D\u0069al\u006fg", java.awt.Font.BOLD, 12), java.awt.Color.
+//                red), getBorder()));
         addPropertyChangeListener(new java.beans.PropertyChangeListener() {
             @Override
-            public void propertyChange(java.beans.PropertyChangeEvent e) {
-                if ("borde\u0072".equals(e.getPropertyName(
-                ))) throw new RuntimeException();
+            public void propertyChange(java.
+                                               beans.PropertyChangeEvent e) {
+                if ("\u0062or\u0064er".equals(e.getPropertyName())) throw new RuntimeException();
             }
         });
         setLayout(new GridBagLayout());
         ((GridBagLayout) getLayout()).columnWidths = new int[]{0, 0, 0};
-        ((GridBagLayout) getLayout()).rowHeights = new int[]{0, 0, 0, 0};
+        ((GridBagLayout) getLayout()).rowHeights = new int[]{0, 0, 0, 0, 0};
         ((GridBagLayout) getLayout()).columnWeights = new double[]{0.0, 0.0, 1.0E-4};
-        ((GridBagLayout) getLayout()).rowWeights = new double[]{0.0, 0.0, 0.0, 1.0E-4};
+        ((GridBagLayout) getLayout()).rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 1.0E-4};
 
         //---- label1 ----
         label1.setText("\u6d4f\u89c8\u5668\uff1a");
         add(label1, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
-                GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                GridBagConstraints.EAST, GridBagConstraints.VERTICAL,
                 new Insets(0, 0, 5, 5), 0, 0));
 
         //======== panel2 ========
@@ -168,9 +178,18 @@ public class SettingsPanel extends JPanel implements Configurable {
                 GridBagConstraints.WEST, GridBagConstraints.VERTICAL,
                 new Insets(0, 0, 5, 0), 0, 0));
 
+        //---- label2 ----
+        label2.setText("\u81ea\u5b9a\u4e49Cookie\u6570\u636e\u5e93\u5730\u5740\uff1a");
+        add(label2, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0,
+                GridBagConstraints.EAST, GridBagConstraints.VERTICAL,
+                new Insets(0, 0, 5, 5), 0, 0));
+        add(customCookieDbPathTextField, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0,
+                GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                new Insets(0, 0, 5, 0), 0, 0));
+
         //---- label4 ----
         label4.setText("\u914d\u7f6e\u5b58\u653e\u8def\u5f84\uff1a");
-        add(label4, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0,
+        add(label4, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0,
                 GridBagConstraints.EAST, GridBagConstraints.VERTICAL,
                 new Insets(0, 0, 5, 5), 0, 0));
 
@@ -187,10 +206,10 @@ public class SettingsPanel extends JPanel implements Configurable {
             selectSaveDirButton.addActionListener(e -> selectSaveDirButtonActionPerformed(e));
             panel1.add(selectSaveDirButton);
         }
-        add(panel1, new GridBagConstraints(1, 1, 1, 1, 0.0, 1.0,
+        add(panel1, new GridBagConstraints(1, 2, 1, 1, 0.0, 1.0,
                 GridBagConstraints.WEST, GridBagConstraints.NONE,
                 new Insets(0, 0, 5, 0), 0, 0));
-        add(vSpacer1, new GridBagConstraints(1, 2, 1, 1, 0.0, 5.0,
+        add(vSpacer1, new GridBagConstraints(1, 3, 1, 1, 0.0, 5.0,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(0, 0, 0, 0), 0, 0));
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
@@ -202,6 +221,8 @@ public class SettingsPanel extends JPanel implements Configurable {
     private JPanel panel2;
     private JRadioButton chromeRadioButton;
     private JRadioButton edgeRadioButton;
+    private JLabel label2;
+    private JTextField customCookieDbPathTextField;
     private JLabel label4;
     private JPanel panel1;
     private JLabel saveDirPath;

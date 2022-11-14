@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'cn.yitulin'
-version '1.0.0'
+version '1.0.2'
 
 repositories {
     mavenLocal()
@@ -31,6 +31,11 @@ intellij {
 }
 patchPluginXml {
     changeNotes = """
+      1.0.2<br>
+      <em>Fixed some known bugs.</em><br>
+      1.0.1<br>
+      <em>Support custom cookie database path.</em><br>
+      <em>Add service name for easy selection.</em><br>
       1.0.0<br>
       <em>init version.</em><br>"""
 }

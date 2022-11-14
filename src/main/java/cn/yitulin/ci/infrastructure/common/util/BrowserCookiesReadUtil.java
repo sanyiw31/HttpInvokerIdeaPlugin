@@ -2,10 +2,13 @@ package cn.yitulin.ci.infrastructure.common.util;
 
 import cn.yitulin.ci.infrastructure.common.enums.BrowserEnum;
 import cn.yitulin.ci.infrastructure.model.Cookie;
+import cn.yitulin.ci.infrastructure.model.PluginConfig;
+import cn.yitulin.ci.infrastructure.service.PluginConfigService;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.intellij.openapi.ui.Messages;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKeyFactory;
@@ -48,8 +51,15 @@ public class BrowserCookiesReadUtil {
         try {
             Class.forName("org.sqlite.JDBC");
             // create a database connection
-            log.info("cookies sqlite数据库文件路径:[{}]", browserEnum.fetchCookiesDbPath());
-            connection = DriverManager.getConnection("jdbc:sqlite:" + browserEnum.fetchCookiesDbPath());
+            String dbPath;
+            PluginConfig pluginConfig = PluginConfigService.getInstance().read();
+            if (StringUtils.isNotBlank(pluginConfig.getCookieDbPath())) {
+                dbPath = pluginConfig.getCookieDbPath();
+            } else {
+                dbPath = browserEnum.fetchCookiesDbPath();
+            }
+            log.info("cookies sqlite数据库文件路径:[{}]", dbPath);
+            connection = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
             statement = connection.createStatement();
             statement.setQueryTimeout(3); // set timeout to 30 seconds
             ResultSet result;
