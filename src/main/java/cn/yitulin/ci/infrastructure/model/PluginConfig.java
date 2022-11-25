@@ -27,6 +27,11 @@ public class PluginConfig {
      */
     private String cookieDbPath;
 
+    /**
+     * 最后使用域名
+     */
+    private String lastUseDomainName;
+
     public String concatDefaultConfigFilePath() {
         return this.configFileDirectory + "/" + Constants.CONFIG_FILE_NAME;
     }

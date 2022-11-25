@@ -47,6 +47,7 @@ public class DomainConfigService {
         log.info("start readAllDomainName");
         readFromDiskAndRefreshCache();
         List<String> domainNames = cache.asMap().keySet().stream().collect(Collectors.toList());
+        domainNames.sort(String::compareToIgnoreCase);
         log.info("finish readAllDomainName, response:[{}]", domainNames);
         return domainNames;
     }

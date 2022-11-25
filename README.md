@@ -14,6 +14,12 @@ If you are a Java backend developer, please try this plugin.
 
 ## Changelog
 
+### November 25, 2022
+
+- Fix some bugs
+- The service environment drop-down list is sorted according to the lexicographical order of the name
+- Record the last used service environment name, which is selected as the default service environment when opening the call window
+
 ### November 11, 2022
 
 - The new name attribute is added to the domain configuration: you can replace the domain by setting a more recognizable name. In the calling window, the original domian selection box is changed to the name selection box. When the name is not configured, the domian is used.

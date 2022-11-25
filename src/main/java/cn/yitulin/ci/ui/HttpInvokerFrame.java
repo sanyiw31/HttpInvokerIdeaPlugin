@@ -4,6 +4,7 @@
 
 package cn.yitulin.ci.ui;
 
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONUtil;
 import cn.yitulin.ci.infrastructure.common.Constants;
 import cn.yitulin.ci.infrastructure.common.enums.HttpMethodEnum;
@@ -16,10 +17,12 @@ import cn.yitulin.ci.infrastructure.model.*;
 import cn.yitulin.ci.infrastructure.service.DomainConfigService;
 import cn.yitulin.ci.infrastructure.service.InvokeLogService;
 import cn.yitulin.ci.infrastructure.service.InvokeService;
+import cn.yitulin.ci.infrastructure.service.PluginConfigService;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import javax.swing.*;
@@ -71,6 +74,9 @@ public class HttpInvokerFrame extends JFrame {
     }
 
     private void refreshParamsFromLog() {
+        if (MapUtil.isEmpty(paramJTextAreaMap)) {
+            return;
+        }
         String url = urlTextField.getText();
         Object methodComboBoxSelectedItem = methodComboBox.getSelectedItem();
         if (Objects.isNull(methodComboBoxSelectedItem)) {
@@ -122,7 +128,15 @@ public class HttpInvokerFrame extends JFrame {
         }
         DefaultComboBoxModel domainComboBoxModel = (DefaultComboBoxModel) domainComboBox.getModel();
         domainNames.stream().forEach(domainName -> domainComboBoxModel.addElement(domainName));
-        if (domainNames.size() > 0) {
+        PluginConfig pluginConfig = PluginConfigService.getInstance().read();
+        if (StringUtils.isNotBlank(pluginConfig.getLastUseDomainName())) {
+            for (int i = 0; i < domainComboBox.getItemCount(); i++) {
+                Object itemAt = domainComboBox.getItemAt(i);
+                if (pluginConfig.getLastUseDomainName().equals(String.valueOf(itemAt))) {
+                    domainComboBox.setSelectedIndex(i);
+                }
+            }
+        }else if (domainNames.size() > 0) {
             domainComboBox.setSelectedIndex(0);
         }
     }

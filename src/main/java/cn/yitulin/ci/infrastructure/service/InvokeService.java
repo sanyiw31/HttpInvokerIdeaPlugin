@@ -1,7 +1,9 @@
 package cn.yitulin.ci.infrastructure.service;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.net.URLEncodeUtil;
+import cn.hutool.http.HttpException;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.http.Method;
@@ -41,11 +43,17 @@ public class InvokeService {
         log.info("start invoke, invoker:[{}]", JSONUtil.toJsonStr(invoker));
         executor.execute(() -> {
             DomainConfig domainConfig = readDomainConfig(invoker.getInvokeBody().getDomainName());
-            HttpResponse response;
-            if (HttpMethodEnum.GET.name().equals(invoker.getInvokeBody().getHttpMethod())) {
-                response = sendRequestWithGet(domainConfig, invoker);
-            } else {
-                response = sendRequestWithMethod(domainConfig, invoker);
+            HttpResponse response = null;
+            try {
+                if (HttpMethodEnum.GET.name().equals(invoker.getInvokeBody().getHttpMethod())) {
+                    response = sendRequestWithGet(domainConfig, invoker);
+                } else {
+                    response = sendRequestWithMethod(domainConfig, invoker);
+                }
+            } catch (HttpException exception) {
+                log.warn("execute invoke, http timeout.\n", exception);
+                EventBusCenter.post(InvokeResponseMessage.create(invoker.getEventId(), exception.getMessage()));
+                return;
             }
             if (Objects.isNull(response)) {
                 return;
@@ -61,14 +69,19 @@ public class InvokeService {
             } catch (IOException e) {
                 log.error("接口调用记录写入失败,失败原因:[{}]", e.getMessage(), e);
             }
+            PluginConfig pluginConfig = PluginConfigService.getInstance().read();
+            if (!invoker.getInvokeBody().getDomainName().equals(pluginConfig.getLastUseDomainName())){
+                pluginConfig.setLastUseDomainName(invoker.getInvokeBody().getDomainName());
+                PluginConfigService.getInstance().save(pluginConfig);
+            }
             EventBusCenter.post(InvokeResponseMessage.create(invoker.getEventId(), responseBody));
         });
         log.info("finish invoke");
     }
 
-    private HttpResponse sendRequestWithMethod(DomainConfig domainConfig, Invoker invoker) {
+    private HttpResponse sendRequestWithMethod(DomainConfig domainConfig, Invoker invoker) throws HttpException {
         log.info("start sendRequestWithMethod,domainConfig:[{}],invoker:[{}]", domainConfig, JSONUtil.toJsonStr(invoker));
-        HttpRequest request = HttpRequest.of(invoker.getInvokeBody().getUrl()).method(matchEnum(invoker.getInvokeBody().getHttpMethod()));
+        HttpRequest request = HttpRequest.of(invoker.getInvokeBody().getUrl()).method(matchEnum(invoker.getInvokeBody().getHttpMethod())).setConnectionTimeout(3 * 1000).setReadTimeout(10 * 1000);
         request.header("Content-Type", "application/json");
         request = requestFillHeaders(domainConfig.getHeaders(), request);
         Map<String, String> cookies = pickCookies(domainConfig);
@@ -83,29 +96,14 @@ public class InvokeService {
             EventBusCenter.post(InvokeResponseMessage.create(invoker.getEventId(), generateUrl(request)));
             return null;
         }
-        log.info("execute sendRequestWithMethod, request.url:[{}], request.headers:[{}], request.body:[{}]", request.getUrl(), JSONUtil.toJsonStr(request.headers()), request.bodyBytes());
+        log.info("execute sendRequestWithMethod, request.url:[{}], request.headers:[{}], request.body:[{}]", request.getUrl(), JSONUtil.toJsonStr(request.headers()), new String(request.bodyBytes()));
         HttpResponse response = request.execute(true);
         log.info("finish sendRequestWithMethod, response:[{}]", response);
         return response;
     }
 
-    private Method matchEnum(String method) {
-        switch (method) {
-            case "GET":
-                return Method.GET;
-            case "POST":
-                return Method.POST;
-            case "PUT":
-                return Method.PUT;
-            case "DELETE":
-                return Method.DELETE;
-            default:
-                return Method.GET;
-        }
-    }
-
-    private HttpResponse sendRequestWithGet(DomainConfig domainConfig, Invoker invoker) {
-        log.info("start sendRequestWithGet,domainConfig:[{}],invoker:[{}]", domainConfig, JSONUtil.toJsonStr(invoker));
+    private HttpResponse sendRequestWithGet(DomainConfig domainConfig, Invoker invoker) throws HttpException {
+        log.info(" ,domainConfig:[{}],invoker:[{}]", domainConfig, JSONUtil.toJsonStr(invoker));
         String url = new StringBuilder(invoker.getInvokeBody().getUrl()).append("?").toString();
         StringBuilder paramsBuilder = new StringBuilder();
         Map<String, Object> getJsonParam = dealGetJsonParam(invoker);
@@ -122,7 +120,7 @@ public class InvokeService {
         }
         String encodeParams = URLEncodeUtil.encode(paramsBuilder.toString());
         log.info("execute sendRequestWithGet, url is:[{}]", url + encodeParams);
-        HttpRequest request = HttpRequest.get(url + encodeParams);
+        HttpRequest request = HttpRequest.get(url + encodeParams).setConnectionTimeout(3 * 1000).setReadTimeout(10 * 1000);
         request = requestFillHeaders(domainConfig.getHeaders(), request);
         Map<String, String> cookies = pickCookies(domainConfig);
         request = requestFillCookies(cookies, request);
@@ -134,6 +132,21 @@ public class InvokeService {
         HttpResponse response = request.execute(true);
         log.info("finish sendRequestWithGet, response.status:[{}], response.body:[{}]", response.getStatus(), response.body());
         return response;
+    }
+
+    private Method matchEnum(String method) {
+        switch (method) {
+            case "GET":
+                return Method.GET;
+            case "POST":
+                return Method.POST;
+            case "PUT":
+                return Method.PUT;
+            case "DELETE":
+                return Method.DELETE;
+            default:
+                return Method.GET;
+        }
     }
 
     private String generateUrl(HttpRequest request) {
@@ -176,6 +189,9 @@ public class InvokeService {
     }
 
     private HttpRequest requestFillHeaders(Map<String, String> headers, HttpRequest request) {
+        if (MapUtil.isEmpty(headers)) {
+            return request;
+        }
         for (String headerName : headers.keySet()) {
             request.header(headerName, headers.get(headerName));
         }

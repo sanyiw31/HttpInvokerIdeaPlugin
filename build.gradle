@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'cn.yitulin'
-version '1.0.2'
+version '1.0.3'
 
 repositories {
     mavenLocal()
@@ -31,6 +31,8 @@ intellij {
 }
 patchPluginXml {
     changeNotes = """
+      1.0.3<br>
+      <em>Fixed some known bugs and made some optimizations.</em><br>
       1.0.2<br>
       <em>Fixed some known bugs.</em><br>
       1.0.1<br>
